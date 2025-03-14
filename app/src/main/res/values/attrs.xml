@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="IconWithBadgeView">
+        <attr name="iconSrc" format="reference" />
+        <attr name="badgeCount" format="integer" />
+        <attr name="badgeBackground" format="reference" />
+        <attr name="circleBackground" format="reference" />
+    </declare-styleable>
+</resources>

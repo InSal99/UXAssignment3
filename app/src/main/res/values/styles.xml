@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    //Text Style
+    <style name="SubHeading.Regular">
+        <item name="android:fontFamily">@font/sodosans_regular</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+    <style name="SubHeading.SemiBold">
+        <item name="android:fontFamily">@font/sodosans_semibold</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+    <style name="SubHeading.Bold">
+        <item name="android:fontFamily">@font/sodosans_bold</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Caption.Regular">
+        <item name="android:fontFamily">@font/sodosans_regular</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    //Form Style
+    <style name="RoundedShapeAppearance">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">60dp</item>
+    </style>
+</resources>

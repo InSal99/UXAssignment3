@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    //Green
+    <color name="green_cool">#EEF2F0</color>
+    <color name="green_starbucks">#286044</color>
+
+    //Black
+    <color name="black_full">#000000</color>
+
+    //White
+    <color name="white_full">#FFFFFF</color>
+    <color name="white_cool">#F9F9F9</color>
+
+    //Red
+    <color name="red_full">#EC5F59</color>
+
+</resources>
