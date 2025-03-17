@@ -2,20 +2,20 @@
 <resources>
 
     //Text Style
-    <style name="SubHeading.Regular">
+    <style name="SubHeading_Regular">
         <item name="android:fontFamily">@font/sodosans_regular</item>
         <item name="android:textSize">14sp</item>
     </style>
-    <style name="SubHeading.SemiBold">
+    <style name="SubHeading_SemiBold">
         <item name="android:fontFamily">@font/sodosans_semibold</item>
         <item name="android:textSize">14sp</item>
     </style>
-    <style name="SubHeading.Bold">
+    <style name="SubHeading_Bold">
         <item name="android:fontFamily">@font/sodosans_bold</item>
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="Caption.Regular">
+    <style name="Caption_Regular">
         <item name="android:fontFamily">@font/sodosans_regular</item>
         <item name="android:textSize">10sp</item>
     </style>

@@ -22,6 +22,8 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        binding.btnInbox.setBadgeCount(1)
+
 
     }
 }
