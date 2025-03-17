@@ -29,7 +29,6 @@
         android:textColor="@color/white_full"
         style="@style/Caption_Regular"
         android:background="@drawable/rounded_bg_red"
-        android:paddingHorizontal="4dp"
         android:layout_gravity="top|end"
         android:layout_marginTop="8dp"
         android:layout_marginStart="8dp"

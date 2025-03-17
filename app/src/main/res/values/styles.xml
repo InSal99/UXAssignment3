@@ -15,6 +15,21 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="Body_SemiBold">
+        <item name="android:fontFamily">@font/sodosans_semibold</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="Body_Regular">
+        <item name="android:fontFamily">@font/sodosans_regular</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="Caption_SemiBold">
+        <item name="android:fontFamily">@font/sodosans_semibold</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+
     <style name="Caption_Regular">
         <item name="android:fontFamily">@font/sodosans_regular</item>
         <item name="android:textSize">10sp</item>

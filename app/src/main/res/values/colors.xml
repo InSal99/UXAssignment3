@@ -9,6 +9,7 @@
 
     //Black
     <color name="black_full">#000000</color>
+    <color name="black_cool">#6A6A6A</color>
 
     //White
     <color name="white_full">#FFFFFF</color>
