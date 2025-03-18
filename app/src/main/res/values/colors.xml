@@ -10,6 +10,8 @@
     //Black
     <color name="black_full">#000000</color>
     <color name="black_cool">#6A6A6A</color>
+    <color name="black_light">#C5C5C5</color>
+    <color name="black_warm">#2C2926</color>
 
     //White
     <color name="white_full">#FFFFFF</color>

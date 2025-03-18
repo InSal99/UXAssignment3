@@ -40,4 +40,10 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">60dp</item>
     </style>
+
+    //Bottom Navigation Style
+<!--    <style name="BottomNavTextStyle" parent="TextAppearance.MaterialComponents.Caption">-->
+<!--        <item name="android:textSize">14sp</item>-->
+<!--        <item name="android:textColor">@color/nav_item_color</item>-->
+<!--    </style>-->
 </resources>

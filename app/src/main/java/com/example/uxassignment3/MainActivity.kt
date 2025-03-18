@@ -4,6 +4,7 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -13,8 +14,6 @@ import com.example.uxassignment3.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var productAdapter: ProductAdapter
-    private lateinit var products: List<Product>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,17 +27,32 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        products = listOf(
-            Product("Blonde Roast - Sunsera", R.drawable.ic_launcher_background, "Rp 54.000"),
-            Product("Mocha Cookie Crumble", R.drawable.ic_launcher_background, "Rp 76.000"),
-            Product("Lavender Crème Frappe", R.drawable.ic_launcher_background, "Rp69.000")
-        )
+        binding.mBottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+//                R.id.btnHome -> showToast("Home clicked")
+                R.id.btnCard -> showToast("Card clicked")
+                R.id.btnOrder -> showToast("Order clicked")
+                R.id.btnReward -> showToast("Reward clicked")
+                R.id.btnStore -> showToast("Store clicked")
+            }
+            true
+        }
 
-        binding.btnInbox.setBadgeCount(1)
+        val mFragmentManager = super.getSupportFragmentManager()
+        val fragment1  = HomeFragment()
+        val fragment = mFragmentManager.findFragmentByTag(HomeFragment::class.java.simpleName)
 
-        binding.rvDOTD.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        productAdapter = ProductAdapter(products)
-        binding.rvDOTD.adapter = productAdapter
+        if (fragment == null) {
+            mFragmentManager
+                .beginTransaction()
+                .replace(binding.root.id, fragment1, HomeFragment::class.java.simpleName)
+                .commit()
+        }
 
     }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
 }

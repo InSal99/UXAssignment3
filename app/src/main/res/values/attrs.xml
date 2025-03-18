@@ -6,4 +6,10 @@
         <attr name="badgeBackground" format="reference" />
         <attr name="circleBackground" format="reference" />
     </declare-styleable>
+
+    <declare-styleable name="CustomDotIndicator">
+        <attr name="progress" format="float"/>
+        <attr name="barColor" format="color"/>
+        <attr name="checkpointRadius" format="dimension" />
+    </declare-styleable>
 </resources>

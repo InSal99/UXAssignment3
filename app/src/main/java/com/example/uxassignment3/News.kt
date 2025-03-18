@@ -1,3 +1,3 @@
 package com.example.uxassignment3
 
-class News (val name: String, val image: Int, val category: String, val uploadTime: String)
+data class News (val title: String, val image: Int, val category: String, val uploadTime: String)
