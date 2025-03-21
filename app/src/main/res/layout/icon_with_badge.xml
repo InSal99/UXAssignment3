@@ -14,7 +14,7 @@
         android:src="@drawable/chevron_right_icon"
         android:tint="@color/green_starbucks"
         app:contentPadding="8dp"
-        android:background="@drawable/rounded_bg_green"
+        android:background="@drawable/rounded_bg_green_cool"
         android:scaleType="centerInside"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>

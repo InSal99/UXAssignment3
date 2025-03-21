@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="dot_height">12dp</dimen>
+    <dimen name="dot_height">8dp</dimen>
     <dimen name="dot_margin">8dp</dimen>
-    <dimen name="default_width">12dp</dimen>
-    <dimen name="stretched_width">24dp</dimen>
+    <dimen name="default_width">8dp</dimen>
+    <dimen name="stretched_width">16dp</dimen>
     <dimen name="corner_radius">6dp</dimen>
 </resources>
