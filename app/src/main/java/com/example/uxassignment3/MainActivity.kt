@@ -1,9 +1,15 @@
 package com.example.uxassignment3
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +17,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.uxassignment3.databinding.ActivityMainBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -27,17 +34,39 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        setupBottomNavigationListener()
+        setupFragment()
+
+    }
+
+    private fun setupBottomNavigationListener() {
         binding.mBottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
-//                R.id.btnHome -> showToast("Home clicked")
-                R.id.btnCard -> showToast("Card clicked")
-                R.id.btnOrder -> showToast("Order clicked")
-                R.id.btnReward -> showToast("Reward clicked")
-                R.id.btnStore -> showToast("Store clicked")
+                R.id.btnHome -> {
+                    animateMenuItem(binding.mBottomNavigation, R.id.btnHome)
+                }
+                R.id.btnCard -> {
+                    showToast("Card clicked")
+                    animateMenuItem(binding.mBottomNavigation, R.id.btnCard)
+                }
+                R.id.btnOrder -> {
+                    showToast("Order clicked")
+                    animateMenuItem(binding.mBottomNavigation, R.id.btnOrder)
+                }
+                R.id.btnReward -> {
+                    showToast("Reward clicked")
+                    animateMenuItem(binding.mBottomNavigation, R.id.btnReward)
+                }
+                R.id.btnStore -> {
+                    showToast("Store clicked")
+                    animateMenuItem(binding.mBottomNavigation, R.id.btnStore)
+                }
             }
             true
         }
+    }
 
+    private fun setupFragment() {
         val mFragmentManager = super.getSupportFragmentManager()
         val fragment1  = HomeFragment()
         val fragment = mFragmentManager.findFragmentByTag(HomeFragment::class.java.simpleName)
@@ -48,7 +77,30 @@ class MainActivity : AppCompatActivity() {
                 .replace(binding.root.id, fragment1, HomeFragment::class.java.simpleName)
                 .commit()
         }
+    }
 
+    private fun animateMenuItem(bottomNavigationView: BottomNavigationView, menuItemId: Int) {
+        val menuView = bottomNavigationView.findViewById<View>(menuItemId)
+
+        val scaleX = PropertyValuesHolder.ofFloat("scaleX", 1.0f, 0.8f)
+        val scaleY = PropertyValuesHolder.ofFloat("scaleY", 1.0f, 0.8f)
+        val animator = ObjectAnimator.ofPropertyValuesHolder(menuView, scaleX, scaleY).apply {
+            duration = 200
+            interpolator = AccelerateDecelerateInterpolator()
+            start()
+        }
+
+        animator.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                val reverseScaleX = PropertyValuesHolder.ofFloat("scaleX", 0.8f, 1.0f)
+                val reverseScaleY = PropertyValuesHolder.ofFloat("scaleY", 0.8f, 1.0f)
+                ObjectAnimator.ofPropertyValuesHolder(menuView, reverseScaleX, reverseScaleY).apply {
+                    duration = 200
+                    interpolator = AccelerateDecelerateInterpolator()
+                    start()
+                }
+            }
+        })
     }
 
     private fun showToast(message: String) {

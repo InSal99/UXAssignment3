@@ -6,6 +6,7 @@
     //Green
     <color name="green_cool">#EEF2F0</color>
     <color name="green_starbucks">#286044</color>
+    <color name="green_accent">#32734E</color>
 
     //Black
     <color name="black_full">#000000</color>

@@ -2,6 +2,11 @@
 <resources>
 
     //Text Style
+    <style name="MediumHeading_Semibold">
+        <item name="android:fontFamily">@font/sodosans_semibold</item>
+        <item name="android:textSize">32sp</item>
+    </style>
+
     <style name="SubHeading_Regular">
         <item name="android:fontFamily">@font/sodosans_regular</item>
         <item name="android:textSize">14sp</item>

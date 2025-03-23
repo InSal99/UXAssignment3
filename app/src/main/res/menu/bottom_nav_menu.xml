@@ -3,26 +3,26 @@
 
     <item
         android:id="@+id/btnHome"
-        android:icon="@drawable/plus_icon"
+        android:icon="@drawable/home_icon"
         android:title="Home"/>
 
     <item
         android:id="@+id/btnCard"
-        android:icon="@drawable/plus_icon"
+        android:icon="@drawable/card_icon"
         android:title="Card"/>
 
     <item
         android:id="@+id/btnOrder"
-        android:icon="@drawable/plus_icon"
+        android:icon="@drawable/order_icon"
         android:title="Order"/>
 
     <item
         android:id="@+id/btnReward"
-        android:icon="@drawable/plus_icon"
+        android:icon="@drawable/star_icon"
         android:title="Reward"/>
 
     <item
         android:id="@+id/btnStore"
-        android:icon="@drawable/plus_icon"
+        android:icon="@drawable/store_icon"
         android:title="Store"/>
 </menu>
