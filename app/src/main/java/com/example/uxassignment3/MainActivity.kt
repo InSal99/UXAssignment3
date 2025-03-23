@@ -6,10 +6,12 @@ import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.app.ActivityOptions
 import android.content.Intent
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -43,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         binding.mBottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.btnHome -> {
-                    animateMenuItem(binding.mBottomNavigation, R.id.btnHome)
+                    animateAVD(binding.mBottomNavigation, R.id.btnHome)
                 }
                 R.id.btnCard -> {
                     showToast("Card clicked")
@@ -101,6 +103,24 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun animateAVD (bottomNavigationView: BottomNavigationView, menuItemId: Int) {
+        val menuView = bottomNavigationView.findViewById<View>(menuItemId)
+        if (menuView == null) {
+            Log.e("AnimationDebug", "Menu view not found.")
+            return
+        }
+
+        val iconContainer = menuView.findViewById<View>(com.google.android.material.R.id.navigation_bar_item_icon_container)
+        val icon = iconContainer?.findViewById<ImageView>(com.google.android.material.R.id.navigation_bar_item_icon_view)
+        if (icon == null) {
+            Log.e("AnimationDebug", "Icon not found.")
+            return
+        }
+
+        val avd = icon.drawable as? AnimatedVectorDrawable
+        avd?.start()
     }
 
     private fun showToast(message: String) {
