@@ -1,30 +1,12 @@
 package com.example.uxassignment3
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import androidx.annotation.OptIn
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.viewpager2.widget.ViewPager2
-import com.example.uxassignment3.BadgeUtils.attachBadge
-import com.example.uxassignment3.BadgeUtils.updateBadgeCount
 import com.example.uxassignment3.databinding.FragmentHomeBinding
-import com.google.android.material.badge.BadgeDrawable
-import com.google.android.material.badge.BadgeUtils
-import com.google.android.material.badge.ExperimentalBadgeUtils
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -46,10 +28,10 @@ class HomeFragment : Fragment() {
             News("We Embrace Our Community Growth", R.drawable.news2, "Promotion", "22 hours ago")
         )
         private val images = listOf(
-            Image(R.drawable.promo1, "https://fastly.picsum.photos/id/866/500/500.jpg"),
-            Image(R.drawable.promo1, "https://fastly.picsum.photos/id/270/500/500.jpg"),
-            Image(R.drawable.promo1, "https://fastly.picsum.photos/id/320/500/500.jpg"),
-            Image(R.drawable.promo1, "https://fastly.picsum.photos/id/798/500/500.jpg")
+            Image(R.drawable.promo1, "https://where2lifestylemagazine.com/wp-content/uploads/2021/11/TikTok-Drink-Web-Banner_1920x800-750x398.png"),
+            Image(R.drawable.promo2, "https://www.starbucks.com.hk/media/wysiwyg/SUM3_BLACKPINK_DESKTOP_1248X692_REUSABLE_EN.jpg"),
+            Image(R.drawable.promo3, "https://foodgressing.com/wp-content/uploads/2023/05/image006.jpg.webp"),
+            Image(R.drawable.promo4, "https://foodgressing.com/wp-content/uploads/2023/05/image006.jpg.webp")
         )
     }
 
@@ -67,6 +49,7 @@ class HomeFragment : Fragment() {
         setupNotif()
         setupCarousel()
         setupRecyclerViews()
+
     }
 
     private fun setupUser() {
