@@ -8,66 +8,84 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.util.AttributeSet
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.TextView
 
 class ProgressView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
+
+    companion object {
+        private const val MAX_PROGRESS = 500f
+    }
+
+    private val checkpointData = listOf(
+        CheckpointInfo("30", 0.10f, 30f),    // 10% of progress bar
+        CheckpointInfo("60", 0.30f, 60f),    // 30% of progress bar
+        CheckpointInfo("120", 0.50f, 120f),  // 50% of progress bar
+        CheckpointInfo("240", 0.70f, 240f),  // 70% of progress bar
+        CheckpointInfo("400", 0.90f, 400f)   // 90% of progress bar
+    )
+
+    // Progress
     var progress: Float = 0f
         private set
+    private var animatedProgress: Float = progress
+    private var checkpointPositions: FloatArray = FloatArray(checkpointData.size)
 
-    private var barColor: Int = resources.getColor(R.color.green_accent)
-    private var backgroundColor: Int = resources.getColor(R.color.white_warm)
-    private var textColor: Int = resources.getColor(R.color.black_full)
+    // Colors
+    private var currentLevelColor: Int = context.getColor(R.color.green_accent)
+    private val greenLevelBarColor: Int = context.getColor(R.color.green_accent)
+    private val goldLevelBarColor: Int = context.getColor(R.color.gold_full)
+    private val backgroundColor: Int = context.getColor(R.color.white_warm)
+    private val textColor: Int = context.getColor(R.color.black_full)
+    private val inactiveTextColor: Int = context.getColor(R.color.black_cool)
+
+    // Dimensions
     private var textLabelSize: Float = context.spToPx(12f)
-    private var cornerRadius: Float = context.dpToPx(60f)
     private var desiredHeight: Float = context.dpToPx(6f)
     private var checkpointRadius: Float = context.dpToPx(8f)
-    private var checkpointCount: Int = 5
-//    var checkpointLabels: List<String> = listOf("30", "60", "120", "240", "400")
-    var checkpointLabels: List<String> = listOf("30", "60", "120", "240", "400")
-//    val segments = listOf(0f, 30f, 60f, 120f, 240f, 400f, 430f)
-    private val checkpointThresholds: List<Float> = checkpointLabels.map { it.toFloat() }
-    private val maxProgress: Float = checkpointThresholds.last() // 400f
+    private var cornerRadius: Float = context.dpToPx(60f)
 
-    private var animatedProgress: Float = progress
-    private var checkpointPositions: FloatArray = FloatArray(checkpointLabels.size)
-    private var animator: ValueAnimator? = null
+    // Typeface
+    private val activeTextStyle = R.style.Body_SemiBold
+    private val inactiveTextStyle = R.style.Body_Regular
+
+    // Drawing coordinates
     private var barTop: Float = 0f
     private var barBottom: Float = 0f
 
-    val activeCheckpointsCount: Int
-        get() = checkpointThresholds.count { progress >= it }
+    // Animation
+    private var animator: ValueAnimator? = null
 
-    private val backgroundPaint = Paint().apply {
-        isAntiAlias = true
+    // Paints
+    private val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
         color = backgroundColor
     }
 
-    private val barPaint = Paint().apply {
-        isAntiAlias = true
+    private val barPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
-        color = barColor
+        color = currentLevelColor
     }
 
-    private val checkpointPaint = Paint().apply {
-        isAntiAlias = true
+    private val checkpointPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
-        color = barColor
+        color = currentLevelColor
     }
 
-    private val textPaint = Paint().apply {
-        isAntiAlias = true
+    private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = textColor
         textSize = textLabelSize
         textAlign = Paint.Align.CENTER
     }
+
+    val activeCheckpointsCount: Int
+        get() = checkpointData.count { progress >= it.threshold }
 
     init {
         initAttributes(context, attrs)
@@ -77,84 +95,10 @@ class ProgressView @JvmOverloads constructor(
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.CustomDotIndicator)
         try {
             progress = typedArray.getFloat(R.styleable.CustomDotIndicator_progress, progress)
-            barColor = typedArray.getColor(R.styleable.CustomDotIndicator_barColor, barColor)
+            currentLevelColor = typedArray.getColor(R.styleable.CustomDotIndicator_barColor, currentLevelColor)
             checkpointRadius = typedArray.getDimension(R.styleable.CustomDotIndicator_checkpointRadius, checkpointRadius)
         } finally {
             typedArray.recycle()
-        }
-    }
-
-//    private fun calculateVisualProgress(currentProgress: Float): Float {
-//        return when {
-//            currentProgress <= 0f -> 0f
-//            currentProgress >= maxProgress -> 1f
-//            else -> {
-//                // Find which segment the progress is in
-//                val segmentIndex = checkpointThresholds.indexOfFirst { currentProgress <= it }
-//                val prevThreshold = checkpointThresholds.getOrElse(segmentIndex - 1) { 0f }
-//                val nextThreshold = checkpointThresholds[segmentIndex]
-//
-//                // Calculate ratio within this segment
-//                val segmentRatio = (currentProgress - prevThreshold) / (nextThreshold - prevThreshold)
-//
-//                // Map to equal visual distribution
-//                (segmentIndex + segmentRatio) / (checkpointThresholds.size - 1)
-//            }
-//        }
-//    }
-
-//    private fun calculateVisualProgress(currentProgress: Float): Float {
-//        return when {
-//            currentProgress <= 0f -> 0f
-//            currentProgress >= maxProgress -> width.toFloat()
-//            else -> {
-//                val totalWidth = width.toFloat()
-//                val padding = totalWidth * 0.1f
-//                val availableWidth = totalWidth - 2 * padding
-//
-//                // Define segment boundaries with more precise checkpoints
-//                val segments = listOf(0f, 30f, 60f, 120f, 240f, 400f, 430f)
-//
-//                // Find which segment the progress belongs to
-//                val segmentIndex = segments.indexOfFirst { currentProgress <= it } - 1
-//
-//                if (segmentIndex < 0) return padding  // Start from initial padding
-//
-//                // Calculate checkpoint x-positions
-//                val checkpointPositions = List(segments.size) { index ->
-//                    padding + (index * availableWidth / (segments.size - 1))
-//                }
-//
-//                // Return the x-position for the current checkpoint
-//                checkpointPositions[segmentIndex + 1]
-//            }
-//        }
-//    }
-
-    private fun calculateVisualProgress(currentProgress: Float): Float {
-        return when {
-            currentProgress <= 0f -> 0f
-            currentProgress >= maxProgress -> width.toFloat()
-            else -> {
-                val totalWidth = width.toFloat()
-                val padding = totalWidth * 0.1f
-                val availableWidth = totalWidth - 2 * padding
-
-                // Debugging print statements
-                Log.d("ProgressView", "Current Progress: $currentProgress")
-                Log.d("ProgressView", "Total Width: $totalWidth")
-                Log.d("ProgressView", "Padding: $padding")
-                Log.d("ProgressView", "Available Width: $availableWidth")
-
-                // Explicitly map progress to width
-                val progressPercentage = currentProgress / maxProgress
-                val progressWidth = padding + (progressPercentage * (availableWidth))
-
-                Log.d("ProgressView", "Progress Percentage: $progressPercentage")
-                Log.d("ProgressView", "Calculated Progress Width: $progressWidth")
-
-                progressWidth
-            }
         }
     }
 
@@ -169,96 +113,36 @@ class ProgressView @JvmOverloads constructor(
         canvas.drawRoundRect(0f, barTop, width.toFloat(), barBottom, cornerRadius, cornerRadius, backgroundPaint)
     }
 
-//    private fun drawProgressBar(canvas: Canvas) {
-//        val progressRatio = progress / maxProgress // 0f to 1f
-//        val barWidth = width * progressRatio
-//        canvas.drawRoundRect(0f, barTop, barWidth, barBottom, cornerRadius, cornerRadius, barPaint)
-//    }
-
     private fun drawProgressBar(canvas: Canvas) {
+        updateBarColor()
         val barWidth = calculateVisualProgress(animatedProgress)
         canvas.drawRoundRect(0f, barTop, barWidth, barBottom, cornerRadius, cornerRadius, barPaint)
     }
 
-//    private fun drawCheckpointsAndLabels(canvas: Canvas) {
-//        for (i in checkpointPositions.indices) {
-//            val checkpointX = checkpointPositions[i]
-//            val checkpointY = barTop + (desiredHeight / 2)
-//
-//            val checkpointProgress = (i.toFloat() / (checkpointCount - 1)) * 100
-//            checkpointPaint.color = if (animatedProgress >= checkpointProgress) barColor else backgroundColor
-//            textPaint.typeface = if (animatedProgress >= checkpointProgress) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
-//
-//            canvas.drawCircle(checkpointX, checkpointY, checkpointRadius, checkpointPaint)
-//            val labelY = checkpointY + checkpointRadius + context.dpToPx(16f)
-//            canvas.drawText(checkpointLabels[i], checkpointX, labelY, textPaint)
-//        }
-//    }
-
-//    private fun calculateFillRatio(currentProgress: Float): Float {
-//        return when {
-//            currentProgress <= 0f -> 0f
-//            currentProgress >= maxProgress -> 1f
-//            else -> {
-//                val upperIndex = checkpointThresholds.indexOfFirst { currentProgress <= it }
-//                val lowerIndex = if (upperIndex > 0) upperIndex - 1 else 0
-//
-//                val lowerThreshold = checkpointThresholds[lowerIndex]
-//                val upperThreshold = checkpointThresholds[upperIndex]
-//
-//                val segmentProgress = (currentProgress - lowerThreshold) /
-//                        (upperThreshold - lowerThreshold)
-//
-//                // Map to equal visual spacing
-//                (lowerIndex + segmentProgress) / (checkpointThresholds.size - 1)
-//            }
-//        }
-//    }
-
-
-//    private fun drawCheckpointsAndLabels(canvas: Canvas) {
-//        for (i in checkpointPositions.indices) {
-//            val threshold = checkpointThresholds[i]
-//            val isActive = progress >= threshold
-//
-//            checkpointPaint.color = if (isActive) barColor else backgroundColor
-//            textPaint.typeface = if (isActive) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
-//
-//            val checkpointX = checkpointPositions[i]
-//            val checkpointY = barTop + (desiredHeight / 2)
-//            canvas.drawCircle(checkpointX, checkpointY, checkpointRadius, checkpointPaint)
-//
-//            val labelY = checkpointY + checkpointRadius + context.dpToPx(16f)
-//            canvas.drawText(checkpointLabels[i], checkpointX, labelY, textPaint)
-//        }
-//    }
 
     private fun drawCheckpointsAndLabels(canvas: Canvas) {
-        for (i in checkpointPositions.indices) {
-            val threshold = checkpointThresholds[i]
-            // Change the condition to match the threshold exactly
-            val isActive = progress >= threshold
-
-            checkpointPaint.color = if (isActive) barColor else backgroundColor
-            textPaint.typeface = if (isActive) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
-
+        checkpointData.forEachIndexed { i, checkpointInfo ->
+            val isActive = animatedProgress >= checkpointInfo.threshold
             val checkpointX = checkpointPositions[i]
             val checkpointY = barTop + (desiredHeight / 2)
 
-            val checkpointProgress = (i.toFloat() / (checkpointCount - 1)) * 100
-            checkpointPaint.color = if (animatedProgress >= checkpointProgress) barColor else backgroundColor
-            textPaint.typeface = if (animatedProgress >= checkpointProgress) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
-
+            checkpointPaint.color = if (isActive) currentLevelColor else backgroundColor
             canvas.drawCircle(checkpointX, checkpointY, checkpointRadius, checkpointPaint)
 
+            TextView(context).apply {
+                setTextAppearance(if (isActive) activeTextStyle else inactiveTextStyle)
+                textPaint.color = currentTextColor
+                textPaint.typeface = typeface
+                textPaint.textSize = textSize
+            }
             val labelY = checkpointY + checkpointRadius + context.dpToPx(16f)
-            canvas.drawText(checkpointLabels[i], checkpointX, labelY, textPaint)
+            canvas.drawText(checkpointInfo.label, checkpointX, labelY, textPaint)
         }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val width = MeasureSpec.getSize(widthMeasureSpec)
-        val minHeight = (2 * checkpointRadius) + desiredHeight + 100
+        val minHeight = (2 * checkpointRadius) + desiredHeight + context.dpToPx(16f)
         val height = resolveSize(minHeight.toInt(), heightMeasureSpec)
         setMeasuredDimension(width, height)
     }
@@ -274,34 +158,54 @@ class ProgressView @JvmOverloads constructor(
         barBottom = barTop + desiredHeight
     }
 
-    //Checkpoint placement to be equally distributed
     private fun computeCheckpointPositions(width: Int) {
-        val totalWidth = width.toFloat()
-        val padding = totalWidth * 0.1f
-        val availableWidth = totalWidth - 2 * padding
-        val spacing = availableWidth / (checkpointCount - 1)
-        checkpointPositions = FloatArray(checkpointCount) { i -> padding + (spacing * i) }
+        checkpointPositions = checkpointData.map { width.toFloat() * it.percentage }.toFloatArray()
     }
 
-    fun setProgress(value: Float) {
-        progress = value.coerceIn(0f, 100f)
-        animateProgress(progress)
+    private fun calculateVisualProgress(currentProgress: Float): Float {
+        return when {
+            currentProgress <= 0f -> 0f
+            currentProgress >= MAX_PROGRESS -> width.toFloat()
+            currentProgress > 400f -> {
+                val lastCheckpointPercentage = checkpointData.last().percentage
+                val progressBeyondLastCheckpoint = currentProgress - 400f
+                val remainingProgressRange = MAX_PROGRESS - 400f
+                val additionalPercentage = (progressBeyondLastCheckpoint / remainingProgressRange) * (1f - lastCheckpointPercentage)
+                width.toFloat() * (lastCheckpointPercentage + additionalPercentage)
+            }
+            else -> calculateProgressBetweenCheckpoints(currentProgress)
+        }
     }
 
-    fun setBarColor(color: Int) {
-        barColor = color
-        checkpointPaint.color = barColor
-        invalidate()
+    private fun calculateProgressBetweenCheckpoints(currentProgress: Float): Float {
+        val matchedCheckpoints = checkpointData
+            .zipWithNext()
+            .firstOrNull { (lower, upper) -> currentProgress in lower.threshold..upper.threshold }
+
+        return if (matchedCheckpoints != null) {
+            val (lowerCheckpoint, upperCheckpoint) = matchedCheckpoints
+            val segmentProgress = (currentProgress - lowerCheckpoint.threshold) / (upperCheckpoint.threshold - lowerCheckpoint.threshold)
+            val interpolatedPercentage = lowerCheckpoint.percentage + (upperCheckpoint.percentage - lowerCheckpoint.percentage) * segmentProgress
+            width.toFloat() * interpolatedPercentage
+        } else {
+            width.toFloat() * (currentProgress / MAX_PROGRESS)
+        }
+    }
+
+    fun setupProgress(value: Float) {
+        progress = value.coerceIn(0f, MAX_PROGRESS)
+        animatedProgress = 0f
+        animateProgress(progress, 1500, 500)
     }
 
     private fun animateProgress(targetProgress: Float, duration: Long = 500, startDelay: Long = 0) {
         animator?.cancel()
-        animator = ValueAnimator.ofFloat(animatedProgress, targetProgress).apply {
+        animator = ValueAnimator.ofFloat(0f, targetProgress).apply {
             this.duration = duration
             this.startDelay = startDelay
             interpolator = AccelerateDecelerateInterpolator()
-            addUpdateListener { animation ->
-                animatedProgress = animation.animatedValue as Float
+            addUpdateListener {
+                animatedProgress = it.animatedValue as Float
                 progress = animatedProgress
                 invalidate()
             }
@@ -314,180 +218,45 @@ class ProgressView @JvmOverloads constructor(
         }
     }
 
-//    private fun checkCheckpointReached() {
-//        for (index in 1 until checkpointCount) {
-//            val checkpointProgress = (index.toFloat() / checkpointCount) * 100
-//            if (progress >= checkpointProgress && animatedProgress >= checkpointProgress) {
-//                animateCheckpoint(index)
-//            }
-//        }
-//    }
-
     private fun checkCheckpointReached() {
-        // Modify the checkpoint check to use exact thresholds
-        for (index in checkpointThresholds.indices) {
-            val checkpointThreshold = checkpointThresholds[index]
-            if (progress >= checkpointThreshold) {
+        checkpointData.forEachIndexed { index, checkpointInfo ->
+            if (progress >= checkpointInfo.threshold) {
                 animateCheckpoint(index)
             }
         }
     }
 
     private fun animateCheckpoint(checkpointIndex: Int) {
-        val scaleAnimator = ValueAnimator.ofFloat(1f, 1.5f, 1f).apply {
+        ValueAnimator.ofFloat(1f, 1.5f, 1f).apply {
             duration = 300
             interpolator = AccelerateDecelerateInterpolator()
-            addUpdateListener { animation ->
-                val scale = animation.animatedValue as Float
-                checkpointPaint.color = barColor
+            addUpdateListener {
+                val scale = it.animatedValue as Float
+                checkpointPaint.color = currentLevelColor
                 checkpointPaint.alpha = (255 * scale).toInt()
-                Log.d("When animate checkpoint", "${progress}")
                 invalidate()
             }
             start()
         }
     }
 
+    private fun updateBarColor() {
+        currentLevelColor = if (progress >= 300f) goldLevelBarColor else greenLevelBarColor
+        barPaint.color = currentLevelColor
+        checkpointPaint.color = currentLevelColor
+    }
+
+    fun setBarColor(color: Int) {
+        currentLevelColor = color
+        checkpointPaint.color = currentLevelColor
+        invalidate()
+    }
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        animatedProgress = -1f
-        animateProgress(progress, 1500, 500)
+        setupProgress(progress)
     }
 
-    fun Context.pxToDp(px: Float): Float {
-        return px / resources.displayMetrics.density
-    }
-
-    fun Context.pxToSp(px: Float): Float {
-        return px / resources.displayMetrics.scaledDensity
-    }
-
-    fun Context.spToPx(sp: Float): Float {
-        return sp * resources.displayMetrics.scaledDensity
-    }
-
-    fun Context.dpToPx(dp: Float): Float {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, resources.displayMetrics)
-    }
-
-
-//    private val checkpoints = listOf(30, 60, 120, 240, 400)
-//    private var currentProgress = 0
-//
-//    private val progressPaint = Paint().apply {
-//        style = Paint.Style.FILL
-//        strokeCap = Paint.Cap.ROUND
-//    }
-//
-//    private val backgroundPaint = Paint().apply {
-//        style = Paint.Style.FILL
-//        color = 0xFFEEEEEE.toInt() // Light gray color for background
-//        strokeCap = Paint.Cap.ROUND
-//    }
-//
-//    private val checkpointPaint = Paint().apply {
-//        style = Paint.Style.FILL
-//        strokeCap = Paint.Cap.ROUND
-//    }
-//
-//    private val textPaint = Paint().apply {
-//        color = 0xFF000000.toInt() // Black color for text
-//        textAlign = Paint.Align.CENTER
-//        textSize = 30f
-//    }
-//
-//    private val progressBarHeight = 20f
-//    private val checkpointRadius = 15f
-//
-//    fun setProgress(progress: Int) {
-//        currentProgress = progress
-//        invalidate()
-//    }
-//
-//    override fun onDraw(canvas: Canvas) {
-//        super.onDraw(canvas)
-//
-//        val width = width.toFloat()
-//        val height = height.toFloat()
-//
-//        // Calculate the width of each segment
-//        val segmentWidth = width / (checkpoints.size - 1)
-//
-//        // Determine progress color based on current progress
-//        progressPaint.color = if (currentProgress > 300) {
-//            0xFFFFD700.toInt() // Gold color
-//        } else {
-//            0xFF2E7D32.toInt() // Green color
-//        }
-//
-//        // Draw background line
-//        canvas.drawLine(
-//            0f,
-//            checkpointRadius,
-//            width,
-//            checkpointRadius,
-//            backgroundPaint
-//        )
-//
-//        // Calculate progress width
-//        val progressWidth = if (currentProgress >= checkpoints.last()) {
-//            width
-//        } else {
-//            var checkpointIndex = 0
-//            for (i in checkpoints.indices) {
-//                if (currentProgress < checkpoints[i]) {
-//                    checkpointIndex = i
-//                    break
-//                }
-//            }
-//
-//            val prevCheckpoint = if (checkpointIndex > 0) checkpoints[checkpointIndex - 1] else 0
-//            val nextCheckpoint = checkpoints[checkpointIndex]
-//
-//            val prevX = if (checkpointIndex > 0) (checkpointIndex - 1) * segmentWidth else 0f
-//            val progressPercentInSegment = (currentProgress - prevCheckpoint).toFloat() / (nextCheckpoint - prevCheckpoint)
-//            prevX + progressPercentInSegment * segmentWidth
-//        }
-//
-//        // Draw progress line
-//        canvas.drawLine(
-//            0f,
-//            checkpointRadius,
-//            progressWidth,
-//            checkpointRadius,
-//            progressPaint
-//        )
-//
-//        // Draw checkpoints and labels
-//        for (i in checkpoints.indices) {
-//            val x = i * segmentWidth
-//            val isCheckpointMet = currentProgress >= checkpoints[i]
-//
-//            // Set checkpoint color based on whether it's met
-//            checkpointPaint.color = if (isCheckpointMet) {
-//                if (currentProgress > 300) 0xFFFFD700.toInt() else 0xFF2E7D32.toInt()
-//            } else {
-//                0xFFEEEEEE.toInt()
-//            }
-//
-//            // Draw checkpoint circle
-//            canvas.drawCircle(
-//                x,
-//                checkpointRadius,
-//                checkpointRadius,
-//                checkpointPaint
-//            )
-//
-//            // Set text style based on whether checkpoint is met
-//            textPaint.typeface = if (isCheckpointMet) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
-//
-//            // Draw checkpoint label
-//            canvas.drawText(
-//                checkpoints[i].toString(),
-//                x,
-//                checkpointRadius * 4,
-//                textPaint
-//            )
-//        }
-//    }
+    private fun Context.spToPx(sp: Float): Float = sp * resources.displayMetrics.scaledDensity
+    private fun Context.dpToPx(dp: Float): Float = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, resources.displayMetrics)
 }

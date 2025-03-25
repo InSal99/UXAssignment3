@@ -46,7 +46,6 @@ class IconWithBadgeView @JvmOverloads constructor(
     private fun setupClickListener() {
         setOnClickListener {
             animateScale()
-            updateBadgeCount(10)
         }
     }
 

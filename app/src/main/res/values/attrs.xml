@@ -12,4 +12,11 @@
         <attr name="barColor" format="color"/>
         <attr name="checkpointRadius" format="dimension" />
     </declare-styleable>
+
+    <declare-styleable name="RewardCardView">
+        <attr name="progressText" format="string"/>
+        <attr name="levelButtonText" format="string"/>
+        <attr name="initialProgress" format="float"/>
+        <attr name="progressBarColor" format="color"/>
+    </declare-styleable>
 </resources>

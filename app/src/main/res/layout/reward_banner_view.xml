@@ -6,6 +6,7 @@
     android:layout_height="wrap_content">
 
     <View
+        android:id="@+id/vCardDecorator"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="@drawable/rounded_bg_green_accent"
@@ -121,19 +122,7 @@
                 app:layout_constraintBottom_toBottomOf="@id/ivStar"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
-<!--            <com.example.uxassignment3.ProgressView-->
-<!--                android:id="@+id/customProgressBar"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="40dp"-->
-<!--                android:layout_marginStart="16dp"-->
-<!--                android:layout_marginEnd="16dp"-->
-<!--                android:layout_marginTop="12dp"-->
-<!--                android:layout_marginBottom="16dp"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toBottomOf="@id/tvStarCount"-->
-<!--                app:layout_constraintBottom_toBottomOf="parent"/>-->
-
-            <com.example.uxassignment3.ProgressViewTest
+            <com.example.uxassignment3.ProgressView
                 android:id="@+id/customProgressBar"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
