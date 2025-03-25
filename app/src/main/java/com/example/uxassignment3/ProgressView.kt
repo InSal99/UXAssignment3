@@ -244,6 +244,11 @@ class ProgressView @JvmOverloads constructor(
 
             val checkpointX = checkpointPositions[i]
             val checkpointY = barTop + (desiredHeight / 2)
+
+            val checkpointProgress = (i.toFloat() / (checkpointCount - 1)) * 100
+            checkpointPaint.color = if (animatedProgress >= checkpointProgress) barColor else backgroundColor
+            textPaint.typeface = if (animatedProgress >= checkpointProgress) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+
             canvas.drawCircle(checkpointX, checkpointY, checkpointRadius, checkpointPaint)
 
             val labelY = checkpointY + checkpointRadius + context.dpToPx(16f)
@@ -278,25 +283,9 @@ class ProgressView @JvmOverloads constructor(
         checkpointPositions = FloatArray(checkpointCount) { i -> padding + (spacing * i) }
     }
 
-    fun setupProgress(value: Float) {
-        progress = value.coerceIn(0f, maxProgress)
-        animatedProgress = progress  // Sync immediately
-        getProgress(progress)
-        Log.d("When set progress", "${progress}")
-        animateProgress(progress)   // Optional: Keep animation if needed
-    }
-
-    fun getProgress(value: Float) : Int {
-        return this.progress.toInt()
-    }
-
-    fun getCurrentProgress(): Float {
-        Log.d("When get current progress", "${progress}")
-        return if (animator?.isRunning == true) {
-            animatedProgress // Return live animation value
-        } else {
-            progress // Return final value
-        }
+    fun setProgress(value: Float) {
+        progress = value.coerceIn(0f, 100f)
+        animateProgress(progress)
     }
 
     fun setBarColor(color: Int) {
