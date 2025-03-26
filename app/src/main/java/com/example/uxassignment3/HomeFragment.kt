@@ -20,7 +20,7 @@ class HomeFragment : Fragment() {
         private val products = listOf(
             Product("Blonde Roast - Sunsera", R.drawable.menu1, "Rp 54.000"),
             Product("Mocha Cookie Crumble", R.drawable.menu2, "Rp 76.000"),
-            Product("Lavender Crème Frappe", R.drawable.menu2, "Rp69.000")
+            Product("Lavender Crème Frappe", R.drawable.menu3, "Rp69.000")
         )
 
         private val news = listOf(
@@ -30,8 +30,7 @@ class HomeFragment : Fragment() {
         private val images = listOf(
             Image(R.drawable.promo1, "https://where2lifestylemagazine.com/wp-content/uploads/2021/11/TikTok-Drink-Web-Banner_1920x800-750x398.png"),
             Image(R.drawable.promo2, "https://www.starbucks.com.hk/media/wysiwyg/SUM3_BLACKPINK_DESKTOP_1248X692_REUSABLE_EN.jpg"),
-            Image(R.drawable.promo3, "https://foodgressing.com/wp-content/uploads/2023/05/image006.jpg.webp"),
-            Image(R.drawable.promo4, "https://foodgressing.com/wp-content/uploads/2023/05/image006.jpg.webp")
+            Image(R.drawable.promo3, "https://foodgressing.com/wp-content/uploads/2023/05/image006.jpg.webp")
         )
     }
 
@@ -50,6 +49,9 @@ class HomeFragment : Fragment() {
         setupCarousel()
         setupRecyclerViews()
 
+        binding.btnNotif.onClickListener = {
+            binding.btnNotif.updateBadgeCount(1)
+        }
     }
 
     private fun setupUser() {
@@ -61,7 +63,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupNotif() {
-        binding.btnNotif.updateBadgeCount(10)
+        binding.btnNotif.updateBadgeCount(1)
     }
 
     private fun setupRecyclerViews() {

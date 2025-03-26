@@ -4,8 +4,6 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
-import android.app.ActivityOptions
-import android.content.Intent
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.util.Log
@@ -15,10 +13,10 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.uxassignment3.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -27,6 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen()
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -38,16 +37,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupBottomNavigationListener()
-        fragmentLoader(HomeFragment())
-//        setupFragment()
-
+        setupFragment(HomeFragment())
     }
 
     private fun setupBottomNavigationListener() {
         binding.mBottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.btnHome -> {
-                    fragmentLoader(HomeFragment())
+                    setupFragment(HomeFragment())
                     animateAVD(binding.mBottomNavigation, R.id.btnHome)
                 }
                 R.id.btnCard -> {
@@ -71,26 +68,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun fragmentLoader(fragment: Fragment) : Boolean {
+    private fun setupFragment(fragment: Fragment) : Boolean {
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.fragment, fragment)
             .commit()
         return true
     }
-
-//    private fun setupFragment() {
-//        val mFragmentManager = super.getSupportFragmentManager()
-//        val fragment1  = HomeFragment()
-//        val fragment = mFragmentManager.findFragmentByTag(HomeFragment::class.java.simpleName)
-//
-//        if (fragment == null) {
-//            mFragmentManager
-//                .beginTransaction()
-//                .replace(binding.root.id, fragment1, HomeFragment::class.java.simpleName)
-//                .commit()
-//        }
-//    }
 
     private fun animateMenuItem(bottomNavigationView: BottomNavigationView, menuItemId: Int) {
         val menuView = bottomNavigationView.findViewById<View>(menuItemId)

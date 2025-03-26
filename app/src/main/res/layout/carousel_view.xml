@@ -17,7 +17,7 @@
         android:id="@+id/dotIndicator2"
         style="@style/CustomTabLayout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="8dp"
         android:clipChildren="false"
         android:clipToPadding="false"
         app:tabGravity="center"
@@ -27,6 +27,7 @@
         app:tabBackground="@null"
         app:tabPaddingStart="4dp"
         app:tabPaddingEnd="4dp"
+        android:layout_marginTop="12dp"
         app:layout_constraintTop_toBottomOf="@id/vpPnP2"
         app:layout_constraintStart_toStartOf="@id/vpPnP2"
         app:layout_constraintEnd_toEndOf="@id/vpPnP2"/>

@@ -12,4 +12,11 @@
         <item name="tabIndicatorHeight">0dp</item>
         <item name="tabIndicatorColor">@android:color/transparent</item>
     </style>
+
+    <style name="Theme.UXAssignment3.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/green_starbucks</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/siren_starbucks</item>
+        <item name="splashScreenIconSize">120dp</item>
+        <item name="postSplashScreenTheme">@style/Base.Theme.UXAssignment3</item>
+    </style>
 </resources>

@@ -17,6 +17,13 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/mBottomNavigation"/>
 
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        app:dividerColor="@color/white_warm"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/mBottomNavigation"/>
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/mBottomNavigation"
         android:layout_width="match_parent"

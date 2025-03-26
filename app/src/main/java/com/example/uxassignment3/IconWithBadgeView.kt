@@ -1,9 +1,12 @@
 package com.example.uxassignment3
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.BounceInterpolator
 import androidx.core.content.ContextCompat
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.button.MaterialButton
@@ -13,10 +16,11 @@ class IconWithBadgeView @JvmOverloads constructor(
 ) : MaterialButton(context, attrs, defStyleAttr) {
 
     private lateinit var badgeDrawable: BadgeDrawable
+    var onClickListener: (() -> Unit)? = null
 
     init {
         setupBadge()
-        setupClickListener()
+        setupTouchListener()
     }
 
     private fun setupBadge() {
@@ -24,11 +28,11 @@ class IconWithBadgeView @JvmOverloads constructor(
             backgroundColor = ContextCompat.getColor(context, R.color.red_full)
             badgeTextColor = ContextCompat.getColor(context, R.color.white_full)
             maxCharacterCount = 3
-            badgeGravity = BadgeDrawable.TOP_START
+            badgeGravity = BadgeDrawable.TOP_END
             isVisible = true
-            number = 5
-            horizontalOffset = 64
-            verticalOffset = 64
+            number = 0
+            horizontalOffset = 60
+            verticalOffset = 60
             setTextAppearance(R.style.Caption_Regular)
         }
         BadgeUtils.attachBadge(badgeDrawable, this)
@@ -43,16 +47,37 @@ class IconWithBadgeView @JvmOverloads constructor(
         Log.d("BadgeDebug", "Badge count updated: ${badgeDrawable.number}")
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setupTouchListener() {
+        setOnTouchListener {view, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    view.animate().scaleX(0.8f).scaleY(0.8f).setDuration(200).start()
+                }
+                MotionEvent.ACTION_UP -> {
+                    view.animate().scaleX(1f).scaleY(1f).setDuration(200).setInterpolator(AccelerateDecelerateInterpolator()).start()
+//                    view.performClick()
+                    setupClickListener()
+                    onClickListener?.invoke()
+                }
+                MotionEvent.ACTION_CANCEL -> {
+                    view.animate().scaleX(1f).scaleY(1f).setDuration(100).start()
+                }
+            }
+            return@setOnTouchListener true
+        }
+    }
+
     private fun setupClickListener() {
-        setOnClickListener {
-            animateScale()
+        super.setOnClickListener {
+            onClickListener?.invoke()
         }
     }
 
     private fun animateScale() {
         animate()
-            .scaleX(0.8f)
-            .scaleY(0.8f)
+            .scaleX(1.1f)
+            .scaleY(1.1f)
             .setDuration(200)
             .setInterpolator(AccelerateDecelerateInterpolator())
             .withEndAction {
